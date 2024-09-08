@@ -4,4 +4,3 @@ sqlalchemy
 python-dotenv
 passlib[bcrypt]
 python-jose
-fastapi-cors
