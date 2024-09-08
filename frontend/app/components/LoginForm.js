@@ -45,6 +45,7 @@ export default function LoginForm() {
       }
 
       const data = await response.json();
+      console.log(await data);
 
       if (data.error) {
         toast({

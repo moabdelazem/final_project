@@ -36,6 +36,21 @@ class UserCreateRequest(BaseModel):
     is_admin: bool = False
 
 
+class UserResponse(BaseModel):
+    """
+    Represents a user response.
+
+    Attributes:
+        id (int): The ID of the user.
+        username (str): The username of the user.
+        is_admin (bool): Indicates whether the user is an admin.
+    """
+
+    id: int
+    username: str
+    is_admin: bool
+
+
 # User Login Request
 class UserLoginRequest(BaseModel):
     """
@@ -68,6 +83,22 @@ class BookCreate(BaseModel):
 class BookResponse(BookCreate):
     """
     Book Response Model
+
+    Attributes:
+    - id: int
+    - is_borrowed: bool
+    """
+
+    id: int
+    is_borrowed: bool
+
+    class Config:
+        orm_mode = True
+
+
+class UpdateBookResponse(BaseModel):
+    """
+    Update Book Response Model
 
     Attributes:
     - id: int
@@ -176,6 +207,19 @@ def create_book(book: BookCreate, db: Session = Depends(get_db)):
     return db_book
 
 
+@router.put("/books/{book_id}", response_model=UpdateBookResponse)
+def update_book(book_id: int, book_status: bool, db: Session = Depends(get_db)):
+    # Check if book exists
+    db_book = crud.get_book_by_id(db, book_id)
+    # If book does not exist, return 404
+    if not db_book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    # Update book status
+    db_book = crud.update_book_status(db, book_id, book_status)
+    # Return book
+    return db_book
+
+
 @router.get("/books/{book_id}", response_model=dict)
 def get_book(book_id: int, db: Session = Depends(get_db)):
     # Check if book exists
@@ -219,7 +263,7 @@ def register(user: UserCreateRequest, db: Session = Depends(get_db)):
     return {"access_token": access_token, "token_type": "bearer"}
 
 
-@router.post("/login", response_model=Token)
+@router.post("/login", response_model=dict)
 def login(user: UserLoginRequest, db: Session = Depends(get_db)):
     # Check if user exists and password is correct
     db_user = crud.get_user_by_name(db, user.username)
@@ -228,8 +272,32 @@ def login(user: UserLoginRequest, db: Session = Depends(get_db)):
         raise HTTPException(status_code=401, detail="Invalid credentials")
     # Create access token
     access_token_expires = timedelta(minutes=ACCESS_TOKEN_EXPIRE_MINUTES)
+    # Get The User id
+    user_id = db_user.id
     access_token = create_access_token(
-        data={"sub": db_user.username}, expires_delta=access_token_expires
+        data={"sub": db_user.username, "id": user_id},
+        expires_delta=access_token_expires,
     )
-    # Return access
-    return {"access_token": access_token, "token_type": "bearer"}
+    # Return access token, token type, and user data
+    return {
+        "access_token": access_token,
+        "token_type": "bearer",
+        "user": {
+            "id": db_user.id,
+            "username": db_user.username,
+            "is_admin": db_user.is_admin,
+        },
+    }
+
+
+@router.delete("/books/{book_id}", response_model=dict)
+def delete_book(book_id: int, db: Session = Depends(get_db)):
+    # Check if book exists
+    book = crud.get_book_by_id(db, book_id)
+    # If book does not exist, return 404
+    if not book:
+        raise HTTPException(status_code=404, detail="Book not found")
+    # Delete book
+    crud.delete_book(db, book_id)
+    # Return success message
+    return {"message": "Book deleted successfully"}

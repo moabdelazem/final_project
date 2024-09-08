@@ -68,3 +68,18 @@ def create_superuser(db: Session, username: str, password: str) -> User:
     db.commit()
     db.refresh(db_user)
     return db_user
+
+
+def update_book_status(db: Session, book_id: int, is_borrowed: bool) -> Book:
+    db_book = db.query(Book).filter(Book.id == book_id).first()
+    db_book.is_borrowed = is_borrowed
+    db.commit()
+    db.refresh(db_book)
+    return db_book
+
+
+def delete_book(db: Session, book_id: int) -> Book:
+    db_book = db.query(Book).filter(Book.id == book_id).first()
+    db.delete(db_book)
+    db.commit()
+    return db_book
