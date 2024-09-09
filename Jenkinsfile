@@ -32,25 +32,4 @@ pipeline {
             }
         }
     }
-
-    post {
-        always {
-            stage('Perform Post-Build Actions') {
-                steps {
-                    node {
-                        echo 'Performing post-build actions...'
-                        // Archive any build artifacts (optional)
-                        archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
-                        cleanWs() // Clean workspace after build
-                    }
-                }
-            }
-        }
-        success {
-            echo 'Build completed successfully!'
-        }
-        failure {
-            echo 'Build failed.'
-        }
-    }
 }
