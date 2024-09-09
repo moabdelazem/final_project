@@ -60,6 +60,16 @@ After provisioning, the following information will be displayed:
    - Open the `variables.tf` file and adjust the variable values according to your AWS environment. For example, you can change the VPC ID, AMI ID, instance type, and key name.
 
 3. **Initialize Terraform**:
+
    ```bash
    terraform init
+   ```
+
+4. **Apply Terraform**
+   ```bash
+   terraform apply
+   ```
+5. **Destroy Terraform**
+   ```bash
+   terraform destroy
    ```
