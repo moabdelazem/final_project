@@ -47,7 +47,7 @@ pipeline {
     }
 
     post {
-          always {
+        always {
             node {
                 echo 'Cleaning up...'
                 archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
