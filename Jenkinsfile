@@ -2,8 +2,9 @@ pipeline {
     agent any
 
     environment {
-        DOCKER_USER = credentials('docker-credentials').username
-        DOCKER_PASS = credentials('docker-credentials').password
+        DOCKERHUB_CREDENTIALS = credentials('docker-credentials') 
+        DOCKER_USER = 'moabdelazem'  
+        DOCKER_PASS = credentials('docker-credentials').password 
     }
 
     stages {
@@ -14,7 +15,7 @@ pipeline {
             }
         }
 
-        // Verfiy Docker Exist
+        // Verify Docker Exist
         stage('Docker Check') {
             steps {
                 script {
@@ -29,7 +30,7 @@ pipeline {
                 script {
                     echo 'Building the Docker image...'
                     // Build Docker image using the Dockerfile from the backend folder
-                    sh 'docker build -t moabdelazem/fp_backend ./backend'
+                    sh 'docker build -t moabdelazem/fp_backend:latest ./backend'
                 }
             }
         }
@@ -39,9 +40,9 @@ pipeline {
                 script {
                     echo 'Pushing the Docker image to Docker Hub...'
                     // Login to Docker Hub and push the image
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker push your-dockerhub-username/backend:latest'
+                        sh 'docker push moabdelazem/fp_backend:latest'
                     }
                 }
             }
