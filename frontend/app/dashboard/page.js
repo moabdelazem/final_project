@@ -230,36 +230,73 @@ export default function LibraryDashboard() {
     }
   };
 
+  /**
+   * Loads user data asynchronously.
+   * @returns {Promise<void>} A promise that resolves when the user data is loaded.
+   * @throws {Error} If there is an error loading the user data.
+   */
   const loadUserData = async () => {
     try {
+      // Fetch User Data
       const userData = await fetchUserData();
+      // Set User Data
       setUser(userData);
     } catch (error) {
+      // Handle Error
       console.error("Error loading user data:", error);
     }
   };
 
+  /**
+   * Adds a new book to the API and updates the state with the added book.
+   * @returns {Promise<void>} A promise that resolves when the book is successfully added.
+   * @throws {Error} If there is an error adding the book.
+   */
   const handleAddBook = async (e) => {
+    // Prevent Default Form Submission
     e.preventDefault();
-    const addedBook = await addBook(newBook);
-    setBooks([...books, addedBook]);
-    setNewBook({ title: "", author: "" });
+    try {
+      // Add Book
+      const addedBook = await addBook(newBook);
+      // Update State
+      setBooks([...books, addedBook]);
+      // Reset Form
+      setNewBook({ title: "", author: "" });
+    } catch (error) {
+      // Handle Error
+      console.error("Error adding book:", error);
+    }
   };
 
+  /**
+   * Updates the status of a book in the API and updates the state with the updated book.
+   * @param {string} number - The ID of the book to update.
+   * @param {boolean} currentStatus - The current status of the book.
+   */
   const handleUpdateStatus = async (id, currentStatus) => {
     try {
+      // Update Book Status
       const newStatus = currentStatus === true ? true : false;
       const updatedBook = await updateBookStatus(id, newStatus);
+      // Set Updated Book Status
       setBooks(
         books.map((book) =>
           book.id === id ? { ...book, status: newStatus } : book
         )
       );
     } catch (error) {
+      // Handle Error
       console.error("Error updating book status:", error);
     }
   };
 
+  /**
+   * Deletes a book from the API.
+   *
+   * @param {string} id - The ID of the book to delete.
+   * @returns {Promise<string>} - The ID of the deleted book.
+   * @throws {Error} - If the deletion fails.
+   */
   const deleteBook = async (id) => {
     try {
       // Fetch Data from API
@@ -289,6 +326,7 @@ export default function LibraryDashboard() {
     }
   };
 
+  // Render Content Based On Active Tab
   const renderContent = () => {
     switch (activeTab) {
       case "dashboard":
