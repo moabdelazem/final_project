@@ -4,6 +4,7 @@ pipeline {
     environment {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
         DOCKER_IMAGE_NAME = "moabdelazem/fp_backend"
+        DOCKER_IMAGE_NAME_FRONTEND = "moabdelazem/fp_frontend"
         DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
@@ -17,13 +18,25 @@ pipeline {
             }
         }
 
-        stage('Build Docker Image') {
+        stage('Build Backend Docker Image') {
             steps {
                 script {
                     // Navigate to the backend directory
                     dir('backend') {
                         // Build the Docker image
                         sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
+                    }
+                }
+            }
+        }
+
+        stage('Build Frontend Docker Image') {
+            steps {
+                script {
+                    // Navigate to the backend directory
+                    dir('frontend') {
+                        // Build the Docker image
+                        sh "docker build -t ${DOCKER_IMAGE_NAME_FRONTEND}:${DOCKER_IMAGE_TAG} ."
                     }
                 }
             }
@@ -37,6 +50,7 @@ pipeline {
                     
                     // Push the image to Docker Hub
                     sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                    sh "docker push ${DOCKER_IMAGE_NAME_FRONTEND}:${DOCKER_IMAGE_TAG}"
                 }
             }
         }
