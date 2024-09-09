@@ -1,0 +1,24 @@
+apiVersion: apps/v1
+kind: Deployment
+metadata:
+  name: bookshelf-backend
+spec:
+  replicas: 1
+  selector:
+    matchLabels:
+      app: bookshelf-backend
+  template:
+    metadata:
+      labels:
+        app: bookshelf-backend
+    spec:
+      containers:
+        - name: fp_backend
+          image: moabdelazem/fp_backend:latest
+          volumeMounts:
+            - name: sqlite-storage
+              mountPath: /app # Path inside the container where the volume will be mounted
+      volumes:
+        - name: sqlite-storage
+          persistentVolumeClaim:
+            claimName: sqlite-pvc
