@@ -47,15 +47,11 @@ pipeline {
     }
 
     post {
-        always {
-            // Clean up the workspace
-            cleanWs()
-        }
-        success {
-            echo 'Docker image successfully built and pushed!'
-        }
-        failure {
-            echo 'The build failed.'
+          always {
+            node {
+                echo 'Cleaning up...'
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            }
         }
     }
 }
