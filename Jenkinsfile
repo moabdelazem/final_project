@@ -1,46 +1,33 @@
 pipeline {
     agent any
 
-    environment {
-        DOCKERHUB_CREDENTIALS = credentials('dockerhub-credentials') 
-        IMAGE_NAME = 'moabdelazem/fp_backend'
-        GITHUB_CREDENTIALS = credentials('github-token') 
-    }
-
     stages {
-        stage('Clone Repository') {
+        stage('Checkout') {
             steps {
-                // Clone the repository containing the backend code
-                git url : 'https://github.com/moabdelazem/final_project.git'
+                echo 'Checking out the code...'
+                git url: 'https://github.com/moabdelazem/final_project', branch: 'main'
             }
         }
-
+        
         stage('Build Docker Image') {
             steps {
                 script {
-                    // Change directory to backend
-                    dir('backend') {
-                        // Build the Docker image
-                        sh 'docker build -t $IMAGE_NAME:latest .'
-                    }
+                    echo 'Building the Docker image...'
+                    // Build Docker image using the Dockerfile from the backend folder
+                    sh 'docker build -t moabdelazem/fp_backend ./backend'
                 }
             }
         }
-
-        stage('Login to Docker Hub') {
-            steps {
-                script {
-                    // Login to Docker Hub using credentials from Jenkins
-                    sh 'echo $DOCKERHUB_CREDENTIALS_PSW | docker login -u $DOCKERHUB_CREDENTIALS_USR --password-stdin'
-                }
-            }
-        }
-
+        
         stage('Push Docker Image') {
             steps {
                 script {
-                    // Push the Docker image to Docker Hub
-                    sh 'docker push $IMAGE_NAME:latest'
+                    echo 'Pushing the Docker image to Docker Hub...'
+                    // Login to Docker Hub and push the image
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'moabdelazem', passwordVariable: 'DOCKER_PASS')]) {
+                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
+                        sh 'docker push your-dockerhub-username/backend:latest'
+                    }
                 }
             }
         }
@@ -48,8 +35,18 @@ pipeline {
 
     post {
         always {
-            echo 'Cleaning up...'
-            archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+            node {
+                echo 'Performing post-build actions...'
+                // Archive any build artifacts (optional)
+                archiveArtifacts artifacts: '**/target/*.jar', allowEmptyArchive: true
+                cleanWs() // Clean workspace after build
+            }
+        }
+        success {
+            echo 'Build completed successfully!'
+        }
+        failure {
+            echo 'Build failed.'
         }
     }
 }
