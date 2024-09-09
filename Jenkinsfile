@@ -11,7 +11,7 @@ pipeline {
         stage('Clone Repository') {
             steps {
                 // Clone the repository containing the backend code
-                git url : 'https://github.com/moabdelazem/final_project.git', credentialsId: GITHUB_CREDENTIALS
+                git url : 'https://github.com/moabdelazem/final_project.git'
             }
         }
 
