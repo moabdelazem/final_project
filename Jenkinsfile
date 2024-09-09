@@ -2,50 +2,56 @@ pipeline {
     agent any
 
     environment {
-        DOCKERHUB_CREDENTIALS = credentials('docker-credentials') 
-        DOCKER_USER = 'moabdelazem'  
-        DOCKER_PASS = credentials('docker-credentials').password 
+        DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
+        DOCKER_IMAGE_NAME = "moabdelazem/fp_backend"
+        DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
     }
 
     stages {
         stage('Checkout') {
             steps {
-                echo 'Checking out the code...'
-                git url: 'https://github.com/moabdelazem/final_project', branch: 'main'
+                // Clean workspace before checking out the code
+                cleanWs()
+                // Checkout code from GitHub
+                checkout scm
             }
         }
 
-        // Verify Docker Exist
-        stage('Docker Check') {
-            steps {
-                script {
-                    echo 'Checking if Docker is installed...'
-                    sh 'docker --version'
-                }
-            }
-        }
-        
         stage('Build Docker Image') {
             steps {
                 script {
-                    echo 'Building the Docker image...'
-                    // Build Docker image using the Dockerfile from the backend folder
-                    sh 'docker build -t moabdelazem/fp_backend:latest ./backend'
-                }
-            }
-        }
-        
-        stage('Push Docker Image') {
-            steps {
-                script {
-                    echo 'Pushing the Docker image to Docker Hub...'
-                    // Login to Docker Hub and push the image
-                    withCredentials([usernamePassword(credentialsId: DOCKERHUB_CREDENTIALS, usernameVariable: 'DOCKER_USER', passwordVariable: 'DOCKER_PASS')]) {
-                        sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
-                        sh 'docker push moabdelazem/fp_backend:latest'
+                    // Navigate to the backend directory
+                    dir('backend') {
+                        // Build the Docker image
+                        sh "docker build -t ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG} ."
                     }
                 }
             }
+        }
+
+        stage('Push to Docker Hub') {
+            steps {
+                script {
+                    // Log in to Docker Hub
+                    sh "echo ${DOCKER_HUB_CREDENTIALS_PSW} | docker login -u ${DOCKER_HUB_CREDENTIALS_USR} --password-stdin"
+                    
+                    // Push the image to Docker Hub
+                    sh "docker push ${DOCKER_IMAGE_NAME}:${DOCKER_IMAGE_TAG}"
+                }
+            }
+        }
+    }
+
+    post {
+        always {
+            // Log out from Docker Hub
+            sh "docker logout"
+        }
+        success {
+            echo "Successfully built and pushed Docker image to Docker Hub"
+        }
+        failure {
+            echo "Failed to build or push Docker image"
         }
     }
 }
