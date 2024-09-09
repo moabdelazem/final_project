@@ -209,3 +209,9 @@ cython_debug/
 
 # Ignore .next file in frontend
 /frontend/.next
+
+# Terraform Ignore
+terraform/.terraform
+terraform/.terraform.lock.hcl
+terraform/terraform.tfstate
+terraform/terraform.tfstate.backup

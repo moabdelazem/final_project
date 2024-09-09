@@ -148,6 +148,7 @@ def get_db():
         db.close()
 
 
+# Create Access Token
 def create_access_token(data: dict, expires_delta: timedelta = None):
     # Create access token
     to_encode = data.copy()
