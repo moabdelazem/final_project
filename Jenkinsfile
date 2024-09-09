@@ -8,6 +8,16 @@ pipeline {
                 git url: 'https://github.com/moabdelazem/final_project', branch: 'main'
             }
         }
+
+        // Verfiy Docker Exist
+        stage('Docker Check') {
+            steps {
+                script {
+                    echo 'Checking if Docker is installed...'
+                    sh 'docker --version'
+                }
+            }
+        }
         
         stage('Build Docker Image') {
             steps {
@@ -24,7 +34,7 @@ pipeline {
                 script {
                     echo 'Pushing the Docker image to Docker Hub...'
                     // Login to Docker Hub and push the image
-                    withCredentials([usernamePassword(credentialsId: 'docker-credentials', usernameVariable: 'moabdelazem', passwordVariable: 'DOCKER_PASS')]) {
+                    withCredentials([usernamePassword(credentialsId: 'docker-credentials')]) {
                         sh 'echo $DOCKER_PASS | docker login -u $DOCKER_USER --password-stdin'
                         sh 'docker push your-dockerhub-username/backend:latest'
                     }
