@@ -399,7 +399,9 @@ export default function LibraryDashboard() {
                             }
                           >
                             <RefreshCwIcon className="mr-2 h-4 w-4" />
-                            Toggle Status
+                            {book.status === "Available"
+                              ? "Check Out"
+                              : "Check In"}
                           </Button>
                           <Button
                             variant="destructive"
@@ -459,11 +461,10 @@ export default function LibraryDashboard() {
       <div className="flex-1 overflow-auto">
         <header className="bg-white shadow-sm">
           <div className="flex items-center justify-between px-4 py-3">
-            <h1 className="text-2xl font-semibold text-gray-800">Dashboard</h1>
+            <h1 className="text-2xl font-semibold text-gray-800">
+              {activeTab.charAt(0).toUpperCase() + activeTab.slice(1)}
+            </h1>
             <div className="flex items-center space-x-4">
-              <span className="text-sm text-muted-foreground">
-                Welcome, {user?.name}
-              </span>
               <DropdownMenu>
                 <DropdownMenuTrigger asChild>
                   <Button
@@ -471,7 +472,7 @@ export default function LibraryDashboard() {
                     className="relative h-8 w-8 rounded-full"
                   >
                     <Avatar className="h-8 w-8">
-                      <AudioWaveformIcon className="mr-2 h-4" />
+                      <AvatarFallback className="h-8 w-8 rounded-full bg-gray-200" />
                     </Avatar>
                   </Button>
                 </DropdownMenuTrigger>
