@@ -1,6 +1,7 @@
 "use client";
 
 import { useState, useEffect } from "react";
+import { router } from "next";
 import { Button } from "@/components/ui/button";
 import { Input } from "@/components/ui/input";
 import {
@@ -204,6 +205,7 @@ export default function LibraryDashboard() {
   const [loading, setLoading] = useState(true);
   const [user, setUser] = useState(null);
   const [activeTab, setActiveTab] = useState("dashboard");
+  const [users, setUsers] = useState([]);
 
   // Load books and user data on component mount
   useEffect(() => {
@@ -326,6 +328,70 @@ export default function LibraryDashboard() {
     }
   };
 
+  const UserManagement = () => {
+    const fetchAllUsersData = async () => {
+      try {
+        const response = await fetch(
+          `${process.env.NEXT_PUBLIC_API_URL}/users`,
+          {
+            method: "GET",
+            headers: {
+              Authorization: `Bearer ${localStorage.getItem("token")}`,
+            },
+          }
+        );
+
+        if (!response.ok) {
+          throw new Error("Failed to fetch users");
+        }
+
+        const dataResponse = await response.json();
+
+        setUsers(dataResponse);
+      } catch (error) {
+        console.error("Error fetching user data:", error);
+      }
+    };
+
+    return (
+      <div>
+        <Table>
+          <TableHeader>
+            <TableRow>
+              <TableHead>Title</TableHead>
+              <TableHead>Author</TableHead>
+              <TableHead>Status</TableHead>
+              <TableHead>Action</TableHead>
+            </TableRow>
+          </TableHeader>
+          <TableBody>
+            {loading ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center">
+                  Loading Users...
+                </TableCell>
+              </TableRow>
+            ) : users.length === 0 ? (
+              <TableRow>
+                <TableCell colSpan={4} className="text-center">
+                  No users found. Add some users to get started.
+                </TableCell>
+              </TableRow>
+            ) : (
+              users.map((user) => (
+                <TableRow key={user.id}>
+                  <TableCell>{user.title}</TableCell>
+                  <TableCell>{user.author}</TableCell>
+                  <TableCell>{user.status}</TableCell>
+                </TableRow>
+              ))
+            )}
+          </TableBody>
+        </Table>
+      </div>
+    );
+  };
+
   // Render Content Based On Active Tab
   const renderContent = () => {
     switch (activeTab) {
@@ -420,11 +486,11 @@ export default function LibraryDashboard() {
           </>
         );
       case "users":
-        return <div>Users Management (placeholder)</div>;
-      case "catalog":
-        return <div>Book Catalog (placeholder)</div>;
-      case "reports":
-        return <div>Reports and Analytics (placeholder)</div>;
+        return (
+          <div>
+            <UserManagement />
+          </div>
+        );
       default:
         return null;
     }
@@ -484,7 +550,8 @@ export default function LibraryDashboard() {
                   <DropdownMenuItem
                     onClick={() => {
                       localStorage.removeItem("token");
-                      location.reload();
+                      // Forwards the user to the login page
+                      router.push("/login");
                     }}
                   >
                     <LogOutIcon className="mr-2 h-4 w-4" />
