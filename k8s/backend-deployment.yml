@@ -1,16 +1,17 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: bookshelf-backend
+  name: booksnippet-backend
+  namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: bookshelf-backend
+      app: booksnippet-backend
   template:
     metadata:
       labels:
-        app: bookshelf-backend
+        app: booksnippet-backend
     spec:
       containers:
         - name: fp_backend
