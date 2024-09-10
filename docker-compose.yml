@@ -1,0 +1,25 @@
+version: '3'
+services:
+  backend:
+    image: moabdelazem/fp_backend:latest
+    container_name: backend
+    ports:
+      - "8000:8000"
+    volumes:
+      - ./backend/db.sqlite3:/app/db.sqlite3  # Mount the SQLite DB file into the container
+    networks:
+      - app-network
+    restart: always
+
+  frontend:
+    image: moabdelazem/fp_frontend:latest
+    container_name: frontend
+    ports:
+      - "3000:3000"
+    networks:
+      - app-network
+    restart: always
+
+networks:
+  app-network:
+    driver: bridge
