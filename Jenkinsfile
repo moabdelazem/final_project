@@ -5,7 +5,7 @@ pipeline {
         DOCKER_HUB_CREDENTIALS = credentials('docker-credentials')
         DOCKER_IMAGE_NAME = "moabdelazem/fp_backend"
         DOCKER_IMAGE_NAME_FRONTEND = "moabdelazem/fp_frontend"
-        DOCKER_IMAGE_TAG = "${BUILD_NUMBER}"
+        DOCKER_IMAGE_TAG = "latest"
     }
 
     stages {
@@ -63,6 +63,9 @@ pipeline {
         }
         success {
             echo "Successfully built and pushed Docker image to Docker Hub"
+            // After building and pushing the Docker image, trigger the Terraform pipeline
+            // The Jenkins File of this pipeline is provided directly in the Terraform pipeline initial configuration
+            build job: 'terraform-pipeline' , wait: false
         }
         failure {
             echo "Failed to build or push Docker image"
