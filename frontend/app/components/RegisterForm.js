@@ -39,7 +39,7 @@ export default function RegisterForm() {
   };
 
   // Get the API URL from the environment variables
-  const API = process.env.NEXT_PUBLIC_API_URL;
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:3000";
 
   // Handle the form submission
   const handleSubmit = async (e) => {
