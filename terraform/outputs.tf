@@ -1,7 +1,11 @@
-output "team1_EKS" {
-  value = aws_eks_cluster.eks.name
+# Purpose: Define outputs for the Terraform module.
+
+# Output the VPC ID
+output "vpc_id" {
+  value = module.vpc.vpc_id
 }
 
-output "cluster_endpoint" {
-  value = aws_eks_cluster.eks.endpoint
-}
+# Output the Cluster Endpoints 
+# output "eks_cluster_endpoint" {
+#   value = module.eks.cluster_endpoint
+# }
