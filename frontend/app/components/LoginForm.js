@@ -31,7 +31,7 @@ export default function LoginForm() {
   const router = useRouter();
 
   // Get the API URL from the environment variables
-  const API = process.env.NEXT_PUBLIC_API_URL;
+  const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
 
   // Handle the form submission
   const handleSubmit = async (e) => {

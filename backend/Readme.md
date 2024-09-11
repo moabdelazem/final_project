@@ -156,3 +156,117 @@ This module defines API endpoints for user authentication, user management, and 
   }
 ]
 ```
+
+### 2. **`GET /users/${user_id}`**
+
+- Retrive The User Data By ID
+
+#### Response:
+
+- **200 OK**: A list of users, each containing:
+  - `id`: `int` - The user's ID.
+  - `username`: `str` - The user's username.
+  - `is_admin`: `bool` - Whether the user is an admin.
+
+#### Example Response:
+
+```json
+[
+  {
+    "id": 7,
+    "username": "moabdelazem",
+    "is_admin": true
+  }
+]
+```
+
+### 3. **`POST /users/`**
+
+- Retrive The User Data By ID
+
+#### Response:
+
+- **200 OK**: A list of users, each containing:
+  - `id`: `int` - The user's ID.
+  - `username`: `str` - The user's username.
+  - `is_admin`: `bool` - Whether the user is an admin.
+
+#### Example Response:
+
+```json
+[
+  {
+    "id": 12,
+    "name": "admin789",
+    "is_admin": true
+  }
+]
+```
+
+### 3. **`GET /books/`**
+
+- Retrive All Existing Books
+
+#### Response:
+
+- **200 OK**: A list of users, each containing:
+  - `id`: `int` - The book's ID.
+  - `title`: `str` - The book's title.
+  - `author`: `str` - The book's author.
+  - `is_borrowd`: `bool` - The Book Status is Avaliable Or Checked Out
+
+#### Example Response:
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Building data intensive applications",
+    "author": "Martin Kleppmann",
+    "is_borrowed": true
+  },
+  {
+    "id": 6,
+    "title": "Database Internals",
+    "author": "Alex Petrov",
+    "is_borrowed": false
+  },
+  {
+    "id": 7,
+    "title": "Mohamed Book",
+    "author": "Mohamed Abdelazem",
+    "is_borrowed": false
+  },
+  {
+    "id": 8,
+    "title": "The C Programming Language",
+    "author": "Dennis Ritchie",
+    "is_borrowed": false
+  }
+]
+```
+
+### 4. **`GET /books/${book_id}`**
+
+- Retrive Book With Provided `book_id`
+
+#### Response:
+
+- **200 OK**: A list of users, each containing:
+  - `id`: `int` - The book's ID.
+  - `title`: `str` - The book's title.
+  - `author`: `str` - The book's author.
+  - `is_borrowd`: `bool` - The Book Status is Avaliable Or Checked Out
+
+#### Example Response:
+
+```json
+[
+  {
+    "id": 2,
+    "title": "Building data intensive applications",
+    "author": "Martin Kleppmann",
+    "is_borrowed": true
+  }
+]
+```
