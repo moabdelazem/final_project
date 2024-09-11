@@ -1,25 +1,38 @@
 apiVersion: apps/v1
 kind: Deployment
 metadata:
-  name: booksnippet-backend
+  name: backend
   namespace: default
 spec:
   replicas: 1
   selector:
     matchLabels:
-      app: booksnippet-backend
+      app: backend
   template:
     metadata:
       labels:
-        app: booksnippet-backend
+        app: backend
     spec:
       containers:
-        - name: fp_backend
+        - name: backend
           image: moabdelazem/fp_backend:latest
           volumeMounts:
             - name: sqlite-storage
-              mountPath: /app # Path inside the container where the volume will be mounted
+              mountPath: /app
       volumes:
         - name: sqlite-storage
           persistentVolumeClaim:
             claimName: sqlite-pvc
+---
+apiVersion: v1
+kind: Service
+metadata:
+  name: backend
+  namespace: default
+spec:
+  selector:
+    app: backend
+  ports:
+    - port: 8000
+      targetPort: 8000
+  type: ClusterIP

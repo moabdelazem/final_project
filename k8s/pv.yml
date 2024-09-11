@@ -8,4 +8,4 @@ spec:
   accessModes:
     - ReadWriteOnce
   hostPath:
-    path: ../backend/db.sqlite3 # Directory on the host node where data will be stored
+    path: ./db.sqlite3
