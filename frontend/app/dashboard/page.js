@@ -36,6 +36,8 @@ import {
 } from "lucide-react";
 import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
 
+const API = process.env.NEXT_PUBLIC_API_URL || "http://localhost:8000";
+
 /**
  * Fetches the list of books from the API.
  * @returns {Promise<Array>} A promise that resolves to an array of book objects.
@@ -45,7 +47,7 @@ import { Avatar, AvatarFallback, AvatarImage } from "@/components/ui/avatar";
  */
 const fetchBooks = async () => {
   // Fetch Data from API
-  const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+  const response = await fetch(`${API}/books`, {
     method: "GET",
     headers: {
       Authorization: `Bearer ${localStorage.getItem("token")}`,
@@ -79,7 +81,7 @@ const fetchBooks = async () => {
 const addBook = async (book) => {
   try {
     // Fetch Data from API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/books`, {
+    const response = await fetch(`${API}/books`, {
       method: "POST",
       headers: {
         "Content-Type": "application/json",
@@ -116,18 +118,15 @@ const addBook = async (book) => {
 const updateBookStatus = async (id, newStatus) => {
   try {
     // Fetch Data from API
-    const response = await fetch(
-      `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,
-      {
-        method: "PUT",
-        headers: {
-          "Content-Type": "application/json",
-          // Get Token From Local Storage
-          Authorization: `Bearer ${localStorage.getItem("token")}`,
-        },
-        body: JSON.stringify({ id: id, book_status: newStatus }),
-      }
-    );
+    const response = await fetch(`${API}/books/${id}`, {
+      method: "PUT",
+      headers: {
+        "Content-Type": "application/json",
+        // Get Token From Local Storage
+        Authorization: `Bearer ${localStorage.getItem("token")}`,
+      },
+      body: JSON.stringify({ id: id, book_status: newStatus }),
+    });
 
     // Handle API Failure
     if (!response.ok) {
@@ -153,7 +152,7 @@ const updateBookStatus = async (id, newStatus) => {
 const fetchUserData = async () => {
   try {
     // Fetch Data from API
-    const response = await fetch(`${process.env.NEXT_PUBLIC_API_URL}/users`, {
+    const response = await fetch(`${API}/users`, {
       method: "GET",
       headers: {
         // Get Token From Local Storage
@@ -302,16 +301,13 @@ export default function LibraryDashboard() {
   const deleteBook = async (id) => {
     try {
       // Fetch Data from API
-      const response = await fetch(
-        `${process.env.NEXT_PUBLIC_API_URL}/books/${id}`,
-        {
-          method: "DELETE",
-          headers: {
-            // Get Token From Local Storage
-            Authorization: `Bearer ${localStorage.getItem("token")}`,
-          },
-        }
-      );
+      const response = await fetch(`${API}/books/${id}`, {
+        method: "DELETE",
+        headers: {
+          // Get Token From Local Storage
+          Authorization: `Bearer ${localStorage.getItem("token")}`,
+        },
+      });
 
       // Handle API Failure
       if (!response.ok) {
@@ -331,15 +327,12 @@ export default function LibraryDashboard() {
   const UserManagement = () => {
     const fetchAllUsersData = async () => {
       try {
-        const response = await fetch(
-          `${process.env.NEXT_PUBLIC_API_URL}/users`,
-          {
-            method: "GET",
-            headers: {
-              Authorization: `Bearer ${localStorage.getItem("token")}`,
-            },
-          }
-        );
+        const response = await fetch(`${API}/users`, {
+          method: "GET",
+          headers: {
+            Authorization: `Bearer ${localStorage.getItem("token")}`,
+          },
+        });
 
         if (!response.ok) {
           throw new Error("Failed to fetch users");
