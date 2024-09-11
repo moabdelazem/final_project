@@ -1,272 +1,152 @@
-# Booksnippet Library Management System API
+# API Documentation
 
-This is a FastAPI-based Backend for a Library Management System that handles user authentication (registration, login) and book management (adding, retrieving books). It uses JWT for authentication and supports both regular users and admins.
+This document outlines the API endpoints and models for the Booksnippet application.
 
-## Requirements
+## Table of Contents
 
-Before starting, ensure you have the following installed:
+1. [Models](#models)
+2. [Endpoints](#endpoints)
+3. [Authentication](#authentication)
 
-- Python 3.7+
-- FastAPI
-- SQLAlchemy
-- `python-jose` for JWT token handling
-- Pydantic
-- PostgreSQL (or any database configured via SQLAlchemy)
+## Models
 
-### Python Packages
+### User Models
 
-You can install the required dependencies using:
+#### UserCreateRequest
 
-```bash
-pip install fastapi uvicorn sqlalchemy pydantic python-jose
+```python
+class UserCreateRequest(BaseModel):
+    username: str
+    password: str
+    is_admin: bool = False
 ```
 
-# Models Documentation (`app/models.py`)
+Represents a user creation request.
 
-This module defines the database models for the Library Management System, including the `User` and `Book` models. It uses SQLAlchemy for ORM (Object-Relational Mapping) and Passlib for password hashing and verification.
+#### UserResponse
 
-## Models
+```python
+class UserResponse(BaseModel):
+    id: int
+    username: str
+    is_admin: bool
+```
 
-### 1. `User`
+Represents a user response.
 
-This model represents the user in the system, with fields for ID, username, password, and an admin flag (`is_admin`). It includes methods for password hashing and verification.
+#### UserLoginRequest
 
-#### Attributes:
+```python
+class UserLoginRequest(BaseModel):
+    username: str
+    password: str
+```
 
-- **id**: `Integer`
-  - Primary key, auto-incremented.
-- **username**: `String`
+Represents a user login request.
 
-  - Username of the user, unique and indexed for quick lookups.
+### Book Models
 
-- **password**: `String`
+#### BookCreate
 
-  - Hashed password. The password is hashed using `bcrypt` for security.
+```python
+class BookCreate(BaseModel):
+    title: str
+    author: str
+```
 
-- **is_admin**: `Boolean`
-  - Flag indicating whether the user is an admin (`True`) or a regular user (`False`). Defaults to `False`.
+Represents a book creation request.
 
-#### Methods:
+#### BookResponse
 
-- **verify_password(plain_password: str) -> bool**:
+```python
+class BookResponse(BookCreate):
+    id: int
+    is_borrowed: bool
+```
 
-  - Verifies whether a plain-text password matches the hashed password stored in the database.
+Represents a book response.
 
-  Example usage:
+#### UpdateBookResponse
 
-  ```python
-  user = db_user  # A User instance from the database
-  if user.verify_password("plain_password"):
-      # Password is correct
-  ```
+```python
+class UpdateBookResponse(BaseModel):
+    id: int
+    is_borrowed: bool
+```
 
-# Routes Documentation (`app/routes.py`)
+Represents an update book response.
 
-This module defines API endpoints for user authentication, user management, and book management. It uses FastAPI to build the endpoints, and JWT for authentication.
+### Token Models
 
-## Dependencies
+#### Token
 
-- **`get_db()`**: Dependency that provides a database session to each request.
-- **`create_access_token(data: dict, expires_delta: timedelta = None)`**: Helper function to create JWT tokens for authenticated users.
+```python
+class Token(BaseModel):
+    access_token: str
+    token_type: str
+```
 
-## Models
+Represents an authentication token.
 
-### 1. **`UserCreateRequest`**
+#### TokenData
 
-- Model used to create a new user.
+```python
+class TokenData(BaseModel):
+    username: str
+```
 
-#### Attributes:
-
-- `username`: `str` - The username of the user.
-- `password`: `str` - The user's password.
-- `is_admin`: `bool` - Whether the user is an admin (default: `False`).
-
-### 2. **`UserLoginRequest`**
-
-- Model used for user login.
-
-#### Attributes:
-
-- `username`: `str` - The username of the user.
-- `password`: `str` - The password of the user.
-
-### 3. **`BookCreate`**
-
-- Model used to create a new book.
-
-#### Attributes:
-
-- `title`: `str` - The title of the book.
-- `author`: `str` - The author of the book.
-
-### 4. **`BookResponse`**
-
-- Model used for returning book details.
-
-#### Attributes:
-
-- `id`: `int` - The ID of the book.
-- `title`: `str` - The title of the book.
-- `author`: `str` - The author of the book.
-- `is_borrowed`: `bool` - Whether the book is borrowed.
-
-### 5. **`Token`**
-
-- Model used for returning access tokens.
-
-#### Attributes:
-
-- `access_token`: `str` - The JWT token for the user.
-- `token_type`: `str` - The type of the token (default: `bearer`).
-
-### 6. **`TokenData`**
-
-- Model used to store token-related data.
-
-#### Attributes:
-
-- `username`: `str` - The username encoded in the token.
+Represents token data.
 
 ## Endpoints
 
-### 1. **`GET /users`**
+### User Endpoints
 
-- Retrieve a list of all users.
+- `GET /users`: Get all users
+- `GET /users/{user_id}`: Get a specific user by ID
+- `POST /users`: Create a new user (Admin level)
+- `POST /register`: Register a new user
+- `POST /login`: Login a user
 
-#### Response:
+### Book Endpoints
 
-- **200 OK**: A list of users, each containing:
-  - `id`: `int` - The user's ID.
-  - `username`: `str` - The user's username.
-  - `is_admin`: `bool` - Whether the user is an admin.
+- `GET /books`: Get all books
+- `POST /books`: Create a new book
+- `PUT /books/{book_id}`: Update a book's status
+- `GET /books/{book_id}`: Get a specific book by ID
+- `DELETE /books/{book_id}`: Delete a book
 
-#### Example Response:
+## Authentication
 
-```json
-[
-  {
-    "id": 1,
-    "username": "admin",
-    "is_admin": true
-  },
-  {
-    "id": 2,
-    "username": "user123",
-    "is_admin": false
-  }
-]
+The API uses JWT (JSON Web Tokens) for authentication. When a user registers or logs in, they receive an access token. This token should be included in the Authorization header of subsequent requests.
+
+Example:
+
+```plaintext
+Authorization: Bearer <access_token>
 ```
 
-### 2. **`GET /users/${user_id}`**
+The access token expires after a set time (default is 15 minutes, configurable via environment variable).
 
-- Retrive The User Data By ID
+## Environment Variables
 
-#### Response:
+- `JWT_SECRET_KEY`: Secret key for JWT encoding/decoding (default: "secret")
+- `JWT_ALGORITHM`: Algorithm used for JWT encoding/decoding (default: "HS256")
+- `ACCESS_TOKEN_EXPI`: Access token expiration time in minutes (default: 15)
 
-- **200 OK**: A list of users, each containing:
-  - `id`: `int` - The user's ID.
-  - `username`: `str` - The user's username.
-  - `is_admin`: `bool` - Whether the user is an admin.
+## Error Handling
 
-#### Example Response:
+The API uses standard HTTP status codes for error responses:
 
-```json
-[
-  {
-    "id": 7,
-    "username": "moabdelazem",
-    "is_admin": true
-  }
-]
-```
+- 400: Bad Request (e.g., user already exists)
+- 401: Unauthorized (e.g., invalid credentials)
+- 404: Not Found (e.g., user or book not found)
 
-### 3. **`POST /users/`**
+Error responses include a "detail" field with a description of the error.
 
-- Retrive The User Data By ID
+## Database
 
-#### Response:
+The API uses SQLAlchemy with a SQLite database. The database session is managed per request using the `get_db` dependency.
 
-- **200 OK**: A list of users, each containing:
-  - `id`: `int` - The user's ID.
-  - `username`: `str` - The user's username.
-  - `is_admin`: `bool` - Whether the user is an admin.
+---
 
-#### Example Response:
-
-```json
-[
-  {
-    "id": 12,
-    "name": "admin789",
-    "is_admin": true
-  }
-]
-```
-
-### 3. **`GET /books/`**
-
-- Retrive All Existing Books
-
-#### Response:
-
-- **200 OK**: A list of users, each containing:
-  - `id`: `int` - The book's ID.
-  - `title`: `str` - The book's title.
-  - `author`: `str` - The book's author.
-  - `is_borrowd`: `bool` - The Book Status is Avaliable Or Checked Out
-
-#### Example Response:
-
-```json
-[
-  {
-    "id": 2,
-    "title": "Building data intensive applications",
-    "author": "Martin Kleppmann",
-    "is_borrowed": true
-  },
-  {
-    "id": 6,
-    "title": "Database Internals",
-    "author": "Alex Petrov",
-    "is_borrowed": false
-  },
-  {
-    "id": 7,
-    "title": "Mohamed Book",
-    "author": "Mohamed Abdelazem",
-    "is_borrowed": false
-  },
-  {
-    "id": 8,
-    "title": "The C Programming Language",
-    "author": "Dennis Ritchie",
-    "is_borrowed": false
-  }
-]
-```
-
-### 4. **`GET /books/${book_id}`**
-
-- Retrive Book With Provided `book_id`
-
-#### Response:
-
-- **200 OK**: A list of users, each containing:
-  - `id`: `int` - The book's ID.
-  - `title`: `str` - The book's title.
-  - `author`: `str` - The book's author.
-  - `is_borrowd`: `bool` - The Book Status is Avaliable Or Checked Out
-
-#### Example Response:
-
-```json
-[
-  {
-    "id": 2,
-    "title": "Building data intensive applications",
-    "author": "Martin Kleppmann",
-    "is_borrowed": true
-  }
-]
-```
+This documentation provides an overview of the API structure and usage. For more detailed information about specific endpoints or models, refer to the inline comments in the code.
