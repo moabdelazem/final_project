@@ -65,7 +65,7 @@ pipeline {
             echo "Successfully built and pushed Docker image to Docker Hub"
             // After building and pushing the Docker image, trigger the Terraform pipeline
             // The Jenkins File of this pipeline is provided directly in the Terraform pipeline initial configuration
-            build job: 'terraform-pipeline' , wait: false
+            // build job: 'terraform-pipeline' , wait: false
         }
         failure {
             echo "Failed to build or push Docker image"
