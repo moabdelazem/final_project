@@ -1,5 +1,23 @@
 This is a [Next.js](https://nextjs.org/) project bootstrapped with [`create-next-app`](https://github.com/vercel/next.js/tree/canary/packages/create-next-app).
 
+## Shape Of The APP
+
+## 1. Home Page
+
+![Home Page](../docs/HomePage.png)
+
+## 2. Login Page
+
+![LoginForm](../docs/LoginForm.png)
+
+## 3. Register Page
+
+![RegisterForm](../docs/RegisterForm.png)
+
+## 3. Register Page
+
+![Dashboard](../docs/Dashboard.png)
+
 ## Getting Started
 
 First, run the development server:
